@@ -3,8 +3,6 @@ package com.example.userinformation;
 class User{
 String id;
 String username;
-String userNumber;
-String userAddress;
 private  User(){}
     User(String id, String username) {
         this.id = id;

@@ -51,12 +51,10 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
         items = new ArrayList<User>();
         adapter = new UserAdapter(this, items, this, this);
         delete = findViewById(R.id.delete);
-        GetAllProducts();
-
-
+        GetAllUsers();
     }
 
-
+/*
     private void GetAllProducts() {
 
         db.collection("Users").get()
@@ -71,22 +69,16 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
                                 if (documentSnapshot.exists()) {
                                     String id = documentSnapshot.getId();
                                     String username = documentSnapshot.getString("User Name");
-
                                     User user = new User(id, username);
                                     items.add(user);
-
                                     rv.setLayoutManager(layoutManager);
                                     rv.setHasFixedSize(true);
                                     rv.setAdapter(adapter);
-                                    ;
                                     adapter.notifyDataSetChanged();
                                     Log.e("LogDATA", items.toString());
-
                                 }
                             }
                         }
-
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -97,8 +89,37 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
                     }
                 });
     }
+*/
 
+    public  void GetAllUsers(){
+      db.collection("Users").get()
 
+              .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                  @Override
+                  public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.isEmpty()){
+                            Log.e("Dareen","no data");
+
+                        }else{
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                String username = documentSnapshot.getString("User Name").toString();
+                                String id = documentSnapshot.getId();
+                                User user = new User(id, username);
+                                items.add(user);
+                                rv.setLayoutManager(layoutManager);
+                                rv.setHasFixedSize(true);
+                                rv.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                  }
+              }).addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception e) {
+                        Log.e("Dareen","failed");
+                  }
+              });
+    }
 
     @Override
     public void onItemClick(int position, String id) {
@@ -106,7 +127,6 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
 
     @Override
     public void onItemClick2(int position, String id) {
-
 
     }
 }

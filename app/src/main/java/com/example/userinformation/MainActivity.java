@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                                                   openActivity2();
                                                   Log.e("TAG", "Data added successfully to database");
                                               }
-
                                           }
                     )
 
