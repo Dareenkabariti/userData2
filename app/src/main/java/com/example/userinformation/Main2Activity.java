@@ -98,63 +98,15 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
                 });
     }
 
-    public void deleteUser(final User user) {
-        db.collection("Users").document(user.getId())
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        items.remove(user);
-                        adapter.notifyDataSetChanged();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("LogDATA", "get failed with delete");
-                    }
-                });
-    }
 
-    public void updateUser(final User user) {
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Name");
-        final View customLayout = getLayoutInflater().inflate(R.layout.dialog, null);
-        builder.setView(customLayout);
-        builder.setPositiveButton(
-                "Update",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                         updateName = customLayout.findViewById(R.id.update_username);
-                        DocumentReference ref = db.collection("Users").document(user.getId());
-                        ref.update("User Name", updateName.getText().toString())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("dareen", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("dareen", "Error updating document", e);
-                                    }
-                                });
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
     @Override
     public void onItemClick(int position, String id) {
-        deleteUser(items.get(position));
     }
 
     @Override
     public void onItemClick2(int position, String id) {
 
-        updateUser(items.get(position));
 
     }
 }
