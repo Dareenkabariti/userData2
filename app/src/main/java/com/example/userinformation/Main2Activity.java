@@ -28,34 +28,31 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 public class Main2Activity extends AppCompatActivity implements UserAdapter.ItemClickListener, UserAdapter.ItemClickListener2 {
-    private FirebaseFirestore firebaseFirestore;
-    private RecyclerView mFireStoreList;
+    
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     ArrayList<User> items;
-    UserAdapter[] myListData;
     UserAdapter adapter;
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
     RecyclerView rv;
     ImageView delete;
     EditText updateName;
-    Button update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         updateName = findViewById(R.id.update_username);
-       // update = findViewById(R.id.btn_update);
-        EditText edit_name;
         rv = findViewById(R.id.rvRest);
         items = new ArrayList<User>();
         adapter = new UserAdapter(this, items, this, this);
         delete = findViewById(R.id.delete);
-        GetAllUsers();
+
+
+        GetAllUserss();
     }
 
-/*
-    private void GetAllProducts() {
+
+    private void GetAllUserss() {
 
         db.collection("Users").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -89,44 +86,66 @@ public class Main2Activity extends AppCompatActivity implements UserAdapter.Item
                     }
                 });
     }
-*/
 
-    public  void GetAllUsers(){
-      db.collection("Users").get()
 
-              .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                  @Override
-                  public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(queryDocumentSnapshots.isEmpty()){
-                            Log.e("Dareen","no data");
+    public void Delete(final User user) {
+        db.collection("Users").document(user.getId())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.e("dareen", "deleted");
+                        items.remove(user);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("dareen", "fail");
+                    }
+                });
+    }
 
-                        }else{
-                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                String username = documentSnapshot.getString("User Name").toString();
-                                String id = documentSnapshot.getId();
-                                User user = new User(id, username);
-                                items.add(user);
-                                rv.setLayoutManager(layoutManager);
-                                rv.setHasFixedSize(true);
-                                rv.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                  }
-              }).addOnFailureListener(new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception e) {
-                        Log.e("Dareen","failed");
-                  }
-              });
+
+    public void updateUser(final User user) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Name");
+        final View customLayout = getLayoutInflater().inflate(R.layout.dialog, null);
+        builder.setView(customLayout);
+        builder.setPositiveButton(
+                "Update",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        updateName = customLayout.findViewById(R.id.update_username);
+
+                        db.collection("Users").document(user.getId()).update("User Name", updateName.getText().toString())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("dareen", "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("dareen", "Error updating document", e);
+                                    }
+                                });
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
     public void onItemClick(int position, String id) {
+        Delete(items.get(position));
     }
 
     @Override
     public void onItemClick2(int position, String id) {
+
+        updateUser(items.get(position));
 
     }
 }
